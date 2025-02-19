@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>防災チェックテスト</title>
+<script>
+    // '生理用品', '粉ミルク', '離乳食', '紙おむつ'　は必要がない場合があるので専用のボタンを表示
+    var Disaster_prevention_goods = ['携帯ラジオ', '懐中電灯', '予備の電池', 'カンパン、缶詰など火を<br>通さずに食べられるもの', 'ミネラルウォーター', '常備薬', '絆創膏', '傷薬', '包帯', '風邪薬', '胃腸薬', '鎮痛剤', '現金', '預貯金通帳', '印鑑', '免許証', '健康保険証', '権利証書', '下着、上着などの衣類', 'タオル', '生理用品', '粉ミルク', '離乳食', '紙おむつ', 'ウェットティッシュ', '合羽', 'ヘルメット', 'ライター', 'ラップフィルム', 'ハザードマップ', '洗面用具（歯ブラシなど）', '缶切り', '栓抜き', '紙皿', '紙コップ', '水筒'];
+    var img_list = ['pocket_radio.png', 'kaichu_dentou.png', 'battery_tan1.png', 'hozonsyoku.png', 'water.png', 'capsule.png', 'bansoukou.png', 'nurigusuri.png', 'houtai.png', 'kazegusuri.png', 'ichouyaku.png', 'itamidome.png', 'genkin.png', 'tsuchou.png', 'inkan.png', 'menkyo.png', 'hokensyou.png', 'kenrisyo.png', 'cloth.png', 'towel.png', 'sanitary_box.png', 'kona_milk.png', 'rinyuu_shoku.png', 'omutsu.png', 'wet_tissue.png', 'kappa.png', 'helmet.png', 'lighter.png', 'wrap.png', 'map.png', 'sennmenn.png', 'kankiri.png', 'sennuki.png', 'kamizara.png', 'kamikoppu.png', 'suitou.png'];
+
+    var frame = 0;
+    var setinterval;
+    function canvas_animation(answer_count, yes_count, grade) {
+        var canvas = document.getElementById('canvas');
+        var pen = canvas.getContext("2d");
+        pen.clearRect(0, 0, canvas.width, canvas.height);
+    
+        pen.beginPath();
+        pen.strokeStyle = "rgb(0,0,0)";
+        pen.lineWidth = 1;
+
+        pen.moveTo(35, 4);
+        pen.lineTo(canvas.width - 30, 4);
+        pen.lineTo(canvas.width - 30, 20);
+        pen.lineTo(35, 20);
+        pen.lineTo(35, 4);
+        pen.stroke();
+
+        pen.beginPath();
+        pen.strokeStyle = "hsl(" + frame * 120 / 185 + ",100%,50%)";
+        pen.lineWidth = 15;
+        pen.beginPath();
+        pen.moveTo(35, 12);
+        if (frame >= 185 * (yes_count / answer_count)) {
+            pen.lineTo(35 + 185 * (yes_count / answer_count), 12);
+            const grade_image = new Image();
+            grade_image.src = grade;
+            grade_image.onload = () => {
+                pen.drawImage(grade_image, 70, 40, 120, 120);
+            };
+            clearInterval(setinterval);
+        } else {
+            pen.lineTo(35 + frame, 12);
+        }
+        pen.stroke();
+
+        frame = frame + 2;
+    }
+
+    var memoly = [];
+    function checksheet_question(answer) {
+        if (answer == 1) {
+            memoly.push(1);
+        } else if (answer == 2) {
+            memoly.push(0);
+        } else if (answer == 3) {
+            memoly.push(2);
+        } else if (answer == 4) {
+            memoly.pop();
+        }
+
+        if (memoly.length > 0) {
+            document.getElementById('undo').style.display = 'block';
+        } else {
+            document.getElementById('undo').style.display = 'none';
+        }
+
+        if (Disaster_prevention_goods[memoly.length] == '生理用品' || Disaster_prevention_goods[memoly.length] == '粉ミルク' || Disaster_prevention_goods[memoly.length] == '離乳食' || Disaster_prevention_goods[memoly.length] == '紙おむつ') {
+            document.getElementById('unnecessary').style.display = 'block';
+        } else {
+            document.getElementById('unnecessary').style.display = 'none';
+        }
+
+        if (memoly.length == Disaster_prevention_goods.length) {
+            document.getElementById('checksheet').style.display = 'none';
+            document.getElementById('answer_check').style.display = 'block';
+            var count = [[], []];
+            var necessary_goods = '';
+            var grade = ['grade1.png', 'grade2.png', 'grade3.png', 'grade4.png', 'grade5.png'];
+            for (var i = 0; i < Disaster_prevention_goods.length; i++) {
+                if (memoly[i] == 1) {
+                    count[0].push(i);
+                } else if (memoly[i] == 2) {
+                    count[1].push(i);
+                } else if (memoly[i] == 0) {
+                    necessary_goods = necessary_goods + '<br>' + Disaster_prevention_goods[i];
+                }
+            }
+            clearInterval(setinterval);
+            frame = 0;
+            var answer_total = Number(Disaster_prevention_goods.length) - count[1].length;
+            document.getElementById('total_answer').innerHTML = 'あなたは' + answer_total + '品目中' + count[0].length + '品目の<br>防災グッズを取り出し可能でした';
+            if (answer_total - count[0].length == 0) {
+                document.getElementById('comment').innerHTML = 'あなたの防災対策は<br>十分に整っています<br>水や食料品の賞味期限にも<br>気を付けておきましょう';
+                setinterval = setInterval(canvas_animation, 1, answer_total, count[0].length, grade[0]);
+            } else if (answer_total - count[0].length <= 3) {
+                if (answer_total - count[0].length == 1) {
+                    document.getElementById('comment').innerHTML = 'あなたの防災対策は<br>とても整っていますが' + necessary_goods + '<br>も用意しておけば完璧です<br>水や食料品の賞味期限にも<br>気を付けておきましょう';
+                } else {
+                    document.getElementById('comment').innerHTML = 'あなたの防災対策は<br>とても整っていますが' + necessary_goods + '<br>などの防災グッズも<br>用意しておけば完璧です<br>水や食料品の賞味期限にも<br>気を付けておきましょう';
+                }
+                setinterval = setInterval(canvas_animation, 1, answer_total, count[0].length, grade[1]);
+            } else if (answer_total - count[0].length <= 8) {
+                document.getElementById('comment').innerHTML = 'あなたの防災対策は<br>概ね整っていますが' + necessary_goods + '<br>などの防災グッズも<br>用意しておく必要があります';
+                setinterval = setInterval(canvas_animation, 1, answer_total, count[0].length, grade[2]);
+            } else if (answer_total - count[0].length <= Math.floor((answer_total) / 2)) {
+                document.getElementById('comment').innerHTML = 'あなたは防災対策を<br>もう少し頑張りましょう' + necessary_goods + '<br>などの防災グッズを<br>用意しておく必要があります';
+                setinterval = setInterval(canvas_animation, 1, answer_total, count[0].length, grade[3]);
+            } else {
+                document.getElementById('comment').innerHTML = 'あなたは防災対策を<br>今からでも頑張りましょう' + necessary_goods + '<br>などの防災グッズを<br>用意する必要があります';
+                setinterval = setInterval(canvas_animation, 1, answer_total, count[0].length, grade[4]);
+            }
+        }
+        document.getElementById('goods').innerHTML = Disaster_prevention_goods[memoly.length];
+        var image_div = document.getElementById('image');
+        image_div.removeChild(image_div.firstChild);
+        var image_tag = document.createElement('img');
+        image_tag.src = img_list[memoly.length];
+        image_tag.height = 200;
+        if (image_tag.width > 200) {
+            image_tag.width = 200;
+        }
+        image_div.appendChild(image_tag);
+    }
+
+    function start() {
+        memoly = [];
+        document.getElementById('answer_check').style.display = 'none';
+        document.getElementById('undo').style.display = 'none';
+        document.getElementById('checksheet').style.display = 'block';
+        document.getElementById('image').style.display = 'block';
+        document.getElementById('goods').textContent = Disaster_prevention_goods[0];
+        checksheet_question(0);
+    }
+</script>
+<style>
+    body {
+        font-family: sans-serif;
+        margin: 0px;
+    }
+    h1 {
+        background-color: #0e8bea;
+        color: #ffffff;
+        font-size: 30px;
+        padding: 8px;
+        padding-top: 14px;
+        margin: 0px;
+        text-align: center;
+    }
+    button {
+        display: block;
+        margin: 8px auto;
+        font-size: 20px;
+        color: #ffffff;
+        border-radius: 15px;
+        font-weight: bold;
+        width: 175px;
+    }
+    div {
+        text-align: center;
+        margin-top: 30px;
+    }
+    #checksheet {
+        display: none;
+    }
+    #answer_check {
+        display: none;
+    }
+    .home_button {
+        margin: 15px auto;
+        background-color:rgb(103, 0, 181);
+    }
+    .yes_button {
+        background-color: rgb(25, 193, 2);
+    }
+    .no_button {
+        background-color: rgb(245, 127, 30);
+    }
+    #unnecessary {
+        background-color: rgb(34, 139, 137);
+    }
+    #undo {
+        background-color: rgb(38, 117, 72);
+    }
+</style>
+</head>
+<body onload="start()">
+    <h1>防災チェックテスト</h1>
+    <div id="checksheet">
+        <div id="image"><img></div>
+        <p><a id="goods"></a>は、<br>すぐに取り出せますか</p>
+        <button class="yes_button" onclick="checksheet_question(1)">はい</button>
+        <button class="no_button" onclick="checksheet_question(2)">いいえ</button>
+        <button id="unnecessary" onclick="checksheet_question(3)">必要がない</button>
+        <button id="undo" onclick="checksheet_question(4)">一つ戻る</button>
+    </div>
+    <div id="answer_check">
+        <p><a id="total_answer"></a></p>
+        <canvas id="canvas" width="250px" height="160px"></canvas>
+        <p><a id="comment"></a></p>
+        <p class="url">このチェックテストは、<br><a href="https://www.city.shibata.lg.jp/kurashi/iza/sonae/1008873/index.html">新発田市ハザードマップの<br>非常持ち出し品チェックシート</a><br>を基に作成しました。</p>
+    </div>
+    <button class="home_button" onclick="location.href='index.html'">ホームに戻る</button>
+</body>
+</html>

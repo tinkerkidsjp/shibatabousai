@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<link rel="shortcut icon" href="https://cyberjapandata.gsi.go.jp/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<title>新発田市地震時避難所マップ</title>
+
+<script type="text/javascript" src="database.js"></script>
+<script type="text/javascript">
+    var lat_now = 0;
+    var lng_now = 0;
+    function search() {
+        navigator.geolocation.getCurrentPosition((position)=> {
+            //緯度
+            const lat = position.coords.latitude;
+            //経度
+            const lng = position.coords.longitude;
+            lat_now = Number(lat);
+            lng_now = Number(lng);
+            Init();
+        });
+    }
+
+    var oMap      = null;
+
+    function Init() {
+        var vURL      = "https://maps.gsi.go.jp";
+        var vURL_Site = "/index_pm.html?postmessage=1#16/" + lat_now + "/" + lng_now + "/&base=pale&ls=pale&disp=1&vs=c0g1j0h0k0l0u0t0z0r0s0m0f1";
+        oMap = document.createElement("iframe");
+        oMap.style.display = "none";
+
+        EvtResize();
+        oMap.src = vURL + vURL_Site;
+        oMap.onload = function(){
+            var oContent   = oMap.contentWindow;
+            var ClientMode = {
+                baseUrl     : null
+                , location    : null
+                , LayerJS     : null
+                , sakuzuList  : null
+                , queryString : null
+            };
+            var double = [];
+            for (var i = 0; i < shelter_name.length; i++) {
+                for (var j = 0; j < shelter_site_name.length; j++) {
+                    if (shelter_name[i] == shelter_site_name[j]) {
+                        double.push(shelter_name[i]);
+                    }
+                }
+            }
+            var template = [];
+            for (var i = 0; i < shelter_name.length + 1; i++) {
+                if (i == shelter_name.length) {
+                    template.push({"fileName":"","visible":true,"features":[{"type":"Feature","properties":{"name":'現在地',"_markerType":"Icon","_iconUrl":"https://maps.gsi.go.jp/portal/sys/v4/symbols/082.png","_iconSize":[20,20],"_iconAnchor":[10,10]},"geometry":{"type":"Point","coordinates":[lng_now,lat_now]}}]}, {"fileName":"","visible":true,"features":[{"type":"Feature","properties":{"_markerType":"DivIcon","_html":"<div style=\"font-size:9.5pt;color:#000000;background-color:#ffffff;\">現在地</div>"},"geometry":{"type":"Point","coordinates":[lng_now + 0.00025,lat_now]}}]});
+                } else {
+                    var double_judg = false;
+                    for (var j = 0; j < double.length; j++) {
+                        if (double[j] == shelter_site_name[i]) {
+                            double_judg = true;
+                            break;
+                        }
+                    }
+                    if (double_judg == true) {
+                        template.push({"fileName":"","visible":true,"features":[{"type":"Feature","properties":{"name":shelter_name[i],"_markerType":"Icon","_iconUrl":"https://maps.gsi.go.jp/portal/sys/v4/symbols/080.png","_iconSize":[20,20],"_iconAnchor":[10,10]},"geometry":{"type":"Point","coordinates":[shelter_lng[i],shelter_lat[i]]}}]}, {"fileName":"","visible":true,"features":[{"type":"Feature","properties":{"_markerType":"DivIcon","_html":"<div style=\"font-size:9.5pt;color:#000000;background-color:#ffffff;\">" + shelter_name[i] + "</div>"},"geometry":{"type":"Point","coordinates":[shelter_lng[i] + 0.00025,shelter_lat[i]]}}]});
+                    } else {
+                        template.push({"fileName":"","visible":true,"features":[{"type":"Feature","properties":{"name":shelter_name[i],"_markerType":"Icon","_iconUrl":"https://maps.gsi.go.jp/portal/sys/v4/symbols/080.png","_iconSize":[20,20],"_iconAnchor":[10,10]},"geometry":{"type":"Point","coordinates":[shelter_lng[i],shelter_lat[i]]}}]}, {"fileName":"","visible":true,"features":[{"type":"Feature","properties":{"_markerType":"DivIcon","_html":"<div style=\"font-size:9.5pt;color:#000000;background-color:#ffffff;\">" + shelter_name[i] + "</div>"},"geometry":{"type":"Point","coordinates":[shelter_lng[i] + 0.00025,shelter_lat[i]]}}]}, {"fileName":"","visible":true,"features":[{"type":"Feature","properties":{"name":shelter_site_name[i],"_markerType":"Icon","_iconUrl":"https://maps.gsi.go.jp/portal/sys/v4/symbols/809.png","_iconSize":[20,20],"_iconAnchor":[10,10]},"geometry":{"type":"Point","coordinates":[shelter_site_lng[i],shelter_site_lat[i]]}}]}, {"fileName":"","visible":true,"features":[{"type":"Feature","properties":{"_markerType":"DivIcon","_html":"<div style=\"font-size:9.5pt;color:#000000;background-color:#ffffff;\">" + shelter_site_name[i] + "</div>"},"geometry":{"type":"Point","coordinates":[shelter_site_lng[i] + 0.00025,shelter_site_lat[i]]}}]});
+                    }
+                }
+            }
+            ClientMode.sakuzuList = template;
+
+            oContent.postMessage(ClientMode, vURL);
+        };
+
+        document.body.appendChild(oMap);
+    };
+
+    function EvtResize(){
+        var w = window.innerWidth;
+        var h = window.innerHeight;
+        if(oMap != null){
+            oMap.style.width   = w + "px";
+            oMap.style.height  = h + "px";
+            if(oMap.style.display == "none"){
+                oMap.style.display = "block";
+            }
+        }
+    };
+
+    window.onload   = function(){
+        document.body.style.margin   = "0px";
+        document.body.style.padding  = "0px";
+        document.body.style.overflow = "hidden";
+        search();
+    }
+    window.onresize = EvtResize;
+</script>
+<style>
+p {
+    margin: 1% auto auto auto;
+    padding: 3px;
+    font-size: 15px;
+}
+.green {
+    background-color: rgb(30, 255, 0);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin: 6% 5%;
+    display: block;
+    text-align: center;
+    position: absolute;
+}
+.red {
+    background-color: rgb(255, 0, 30);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin: 6% 5%;
+    display: block;
+    text-align: center;
+    position: absolute;
+}
+.pink {
+    background-color: rgb(255, 41, 159);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin: 6% 5%;
+    display: block;
+    text-align: center;
+    position: absolute;
+}
+#topDiv {
+    visibility: visible;
+    background-color:rgb(255, 255, 255);
+    border: 1px;
+    border-color: rgb(130, 130, 130);
+    border-style: solid;
+    position: absolute;
+    width: 100px;
+    height: 85px;
+    line-height: 150%;
+    top: 80%;
+    right: 10%;
+}
+</style>
+</head>
+<body>
+    <div id="topDiv" style="text-align: left;">
+        <p style="line-height: normal;"><div class="green"></div>　　現在地<br><div class="red"></div>　　避難所<br><div class="pink"></div>　　避難場所</p>
+    </div>
+</body>
+</html>

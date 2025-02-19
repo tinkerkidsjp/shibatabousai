@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<link rel="shortcut icon" href="https://cyberjapandata.gsi.go.jp/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<title>新発田市津波時避難所マップ</title>
+
+<script type="text/javascript" src="database.js"></script>
+<script type="text/javascript">
+    var lat_now = 0;
+    var lng_now = 0;
+    function search() {
+        navigator.geolocation.getCurrentPosition((position)=> {
+            //緯度
+            const lat = position.coords.latitude;
+            //経度
+            const lng = position.coords.longitude;
+            lat_now = Number(lat);
+            lng_now = Number(lng);
+            Init();
+        });
+    }
+
+    var oMap      = null;
+
+    function Init() {
+        var vURL      = "https://maps.gsi.go.jp";
+        var vURL_Site = "/index_pm.html?postmessage=1#16/" + lat_now + "/" + lng_now + "/&base=pale&ls=pale%7Crelief_free%2C0.25&blend=1&disp=11&vs=c0g1j0h0k0l0u0t0z0r0s0m0f1&reliefdata=01G6EFF4AG2G76FF3CG3G7AFF35G4G7EFE2EG5G5FED26G6G3FDC1DG7G20CB15G8G10C311GG00BA0C";
+        oMap = document.createElement("iframe");
+        oMap.style.display = "none";
+        EvtResize();
+        oMap.src = vURL + vURL_Site;
+        oMap.onload = function(){
+            var oContent   = oMap.contentWindow;
+            var ClientMode = {
+                baseUrl     : null
+                , location    : null
+                , LayerJS     : null
+                , sakuzuList  : null
+                , queryString : null
+            };
+            var double = [];
+            for (var i = 0; i < shelter_name.length; i++) {
+                for (var j = 0; j < shelter_site_name.length; j++) {
+                    if (shelter_name[i] == shelter_site_name[j]) {
+                        double.push(shelter_name[i]);
+                    }
+                }
+            }
+            var template = [];
+            for (var i = 0; i < shelter_name.length + 1; i++) {
+                if (i == shelter_name.length) {
+                    template.push({"fileName":"","visible":true,"features":[{"type":"Feature","properties":{"name":'現在地',"_markerType":"Icon","_iconUrl":"https://maps.gsi.go.jp/portal/sys/v4/symbols/082.png","_iconSize":[20,20],"_iconAnchor":[10,10]},"geometry":{"type":"Point","coordinates":[lng_now,lat_now]}}]}, {"fileName":"","visible":true,"features":[{"type":"Feature","properties":{"_markerType":"DivIcon","_html":"<div style=\"font-size:9.5pt;color:#000000;background-color:#ffffff;\">現在地</div>"},"geometry":{"type":"Point","coordinates":[lng_now + 0.00025,lat_now]}}]});
+                } else {
+                    var double_judg = false;
+                    for (var j = 0; j < double.length; j++) {
+                        if (double[j] == shelter_site_name[i]) {
+                            double_judg = true;
+                            break;
+                        }
+                    }
+                    if (double_judg == true) {
+                        template.push({"fileName":"","visible":true,"features":[{"type":"Feature","properties":{"name":shelter_name[i],"_markerType":"Icon","_iconUrl":"https://maps.gsi.go.jp/portal/sys/v4/symbols/080.png","_iconSize":[20,20],"_iconAnchor":[10,10]},"geometry":{"type":"Point","coordinates":[shelter_lng[i],shelter_lat[i]]}}]}, {"fileName":"","visible":true,"features":[{"type":"Feature","properties":{"_markerType":"DivIcon","_html":"<div style=\"font-size:9.5pt;color:#000000;background-color:#ffffff;\">" + shelter_name[i] + "</div>"},"geometry":{"type":"Point","coordinates":[shelter_lng[i] + 0.00025,shelter_lat[i]]}}]});
+                    } else {
+                        template.push({"fileName":"","visible":true,"features":[{"type":"Feature","properties":{"name":shelter_name[i],"_markerType":"Icon","_iconUrl":"https://maps.gsi.go.jp/portal/sys/v4/symbols/080.png","_iconSize":[20,20],"_iconAnchor":[10,10]},"geometry":{"type":"Point","coordinates":[shelter_lng[i],shelter_lat[i]]}}]}, {"fileName":"","visible":true,"features":[{"type":"Feature","properties":{"_markerType":"DivIcon","_html":"<div style=\"font-size:9.5pt;color:#000000;background-color:#ffffff;\">" + shelter_name[i] + "</div>"},"geometry":{"type":"Point","coordinates":[shelter_lng[i] + 0.00025,shelter_lat[i]]}}]}, {"fileName":"","visible":true,"features":[{"type":"Feature","properties":{"name":shelter_site_name[i],"_markerType":"Icon","_iconUrl":"https://maps.gsi.go.jp/portal/sys/v4/symbols/809.png","_iconSize":[20,20],"_iconAnchor":[10,10]},"geometry":{"type":"Point","coordinates":[shelter_site_lng[i],shelter_site_lat[i]]}}]}, {"fileName":"","visible":true,"features":[{"type":"Feature","properties":{"_markerType":"DivIcon","_html":"<div style=\"font-size:9.5pt;color:#000000;background-color:#ffffff;\">" + shelter_site_name[i] + "</div>"},"geometry":{"type":"Point","coordinates":[shelter_site_lng[i] + 0.00025,shelter_site_lat[i]]}}]});
+                    }
+                }
+            }
+            ClientMode.sakuzuList = template;
+
+            oContent.postMessage(ClientMode, vURL);
+        };
+
+        document.body.appendChild(oMap);
+    };
+
+    function EvtResize(){
+        var w = window.innerWidth;
+        var h = window.innerHeight;
+        if(oMap != null){
+            oMap.style.width   = w + "px";
+            oMap.style.height  = h + "px";
+            if(oMap.style.display == "none"){
+                oMap.style.display = "block";
+            }
+        }
+    };
+
+    function showWindow(divId) {
+        document.getElementById(divId).style.visibility = "visible";
+    }
+
+    function closeWindow(divId) {
+        document.getElementById(divId).style.visibility = "hidden";
+    }
+
+    
+
+    window.onload   = function(){
+        document.body.style.margin   = "0px";
+        document.body.style.padding  = "0px";
+        document.body.style.overflow = "hidden";
+        document.getElementById("open_button").addEventListener("click", () => {
+            closeWindow("closeDiv");
+            showWindow("openDiv");
+        });
+
+        document.getElementById("close_button").addEventListener("click", () => {
+            closeWindow("openDiv");
+            showWindow("closeDiv");
+        });
+        showWindow("closeDiv");
+        search();
+    }
+    window.onresize = EvtResize;
+</script>
+<style>
+p {
+    margin: 1% auto auto auto;
+    padding: 3px;
+    font-size: 15px;
+}
+.green {
+    background-color: rgb(30, 255, 0);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin: 6% 5%;
+    display: block;
+    text-align: center;
+    position: absolute;
+}
+.red {
+    background-color: rgb(255, 0, 30);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin: 6% 5%;
+    display: block;
+    text-align: center;
+    position: absolute;
+}
+.pink {
+    background-color: rgb(255, 41, 159);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin: 6% 5%;
+    display: block;
+    text-align: center;
+    position: absolute;
+}
+.one {
+    background-color: rgba(110, 255, 74, 0.75);
+    width: 15px;
+    height: 12px;
+    margin: 4% 5%;
+    display: block;
+    text-align: center;
+    position: absolute;
+}
+.two {
+    background-color: rgba(118, 255, 60, 0.75);
+    width: 15px;
+    height: 12px;
+    margin: 4% 5%;
+    display: block;
+    text-align: center;
+    position: absolute;
+}
+.three {
+    background-color: rgba(122, 255, 53, 0.75);
+    width: 15px;
+    height: 12px;
+    margin: 4% 5%;
+    display: block;
+    text-align: center;
+    position: absolute;
+}
+.four {
+    background-color: rgba(126, 254, 46, 0.75);
+    width: 15px;
+    height: 12px;
+    margin: 4% 5%;
+    display: block;
+    text-align: center;
+    position: absolute;
+}
+.five {
+    background-color: rgba(95, 237, 38, 0.75);
+    width: 15px;
+    height: 12px;
+    margin: 4% 5%;
+    display: block;
+    text-align: center;
+    position: absolute;
+}
+.six {
+    background-color: rgba(63, 220, 29, 0.75);
+    width: 15px;
+    height: 12px;
+    margin: 4% 5%;
+    display: block;
+    text-align: center;
+    position: absolute;
+}
+.seven {
+    background-color: rgba(32, 203, 21, 0.75);
+    width: 15px;
+    height: 12px;
+    margin: 4% 5%;
+    display: block;
+    text-align: center;
+    position: absolute;
+}
+.eight {
+    background-color: rgba(0, 186, 12, 0.75);
+    width: 15px;
+    height: 12px;
+    margin: 4% 5%;
+    display: block;
+    text-align: center;
+    position: absolute;
+}
+#topDiv {
+    visibility: visible;
+    background-color:rgb(255, 255, 255);
+    border: 1px;
+    border-color: rgb(130, 130, 130);
+    border-style: solid;
+    position: absolute;
+    width: 100px;
+    height: 85px;
+    line-height: 150%;
+    bottom: 8.5%;
+    right: 10%;
+}
+#openDiv {
+    visibility: hidden;
+    background-color:rgb(255, 255, 255);
+    border: 1px;
+    border-color: rgb(130, 130, 130);
+    border-style: solid;
+    position: absolute;
+    text-align: left;
+    width: 140px;
+    height: 200px;
+    line-height: 150%;
+    bottom: 8.5%;
+    right: 40%;
+}
+#closeDiv {
+    visibility: hidden;
+    background-color:rgb(255, 255, 255);
+    border: 1px;
+    border-color: rgb(130, 130, 130);
+    border-style: solid;
+    position: absolute;
+    line-height: 24px;
+    width: 100px;
+    height: 30px;
+    bottom: 8.5%;
+    right: 40%;
+}
+#close_button {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    line-height: 18px;
+    background-color:cadetblue;
+    text-align: center;
+    position: absolute;
+    right: 3px;
+    top: 2px;
+}
+#open_button {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    line-height: 18px;
+    background-color:cadetblue;
+    text-align: center;
+    position: absolute;
+    right: 3px;
+    top: 5px;
+}
+</style>
+</head>
+<body>
+    <div id="closeDiv">
+        <p>　色の説明</p><div id="open_button">+</div>
+    </div>
+    <div id="openDiv">
+        <div id="close_button">-</div>
+        <p><div class="one"></div>　　1m以下<br><div class="two"></div>　　1m~2m以下<br><div class="three"></div>　　2m~3m以下<br><div class="four"></div>　　3m~4m以下<br><div class="five"></div>　　4m~5m以下<br><div class="six"></div>　　5m~6m以下<br><div class="seven"></div>　　6m~7m以下<br><div class="eight"></div>　　7m以上</p>
+    </div>
+    <div id="topDiv" style="text-align: left;">
+        <p><div class="green"></div>　　現在地<br><div class="red"></div>　　避難所<br><div class="pink"></div>　　避難場所</p>
+    </div>
+</body>
+</html>

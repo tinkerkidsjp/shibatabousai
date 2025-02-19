@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>新発田市防災アプリ</title>
+<style>
+body {
+    font-family: sans-serif;
+    margin: 0px;
+}
+h1 {
+    background-color: #0e8bea;
+    color: #ffffff;
+    font-size: 30px;
+    padding: 8px;
+    padding-top: 14px;
+    margin: 0px;
+    text-align: center;
+}
+button {
+    margin: 15px auto;
+    display: block;
+    font-size: 22px;
+    color: #ffffff;
+    border-radius: 15px;
+    font-weight: bold;
+    width: 260px;
+}
+p {
+    font-size: 17px;
+}
+img {
+    width: 250px;
+}
+.heavy_rain_button {
+    background-color: rgb(245, 30, 30);
+}
+.earth_quake_button {
+    background-color: rgb(182, 84, 38);
+}
+.tsunami_button {
+    background-color: rgb(30, 30, 245);
+}
+.Wi-Fi_button {
+    background-color: rgb(10, 205, 0);
+}
+.test_button {
+    background-color: rgb(103, 0, 181);
+}
+</style>
+</head>
+<body style="text-align: center; font-family: sans-serif;">
+<h1>新発田市防災アプリ</h1>
+<button class="heavy_rain_button" onclick="location.href='heavy_rain_shelter_map.html'">避難所を探す(豪雨時)</button>
+<button class="earth_quake_button" onclick="location.href='earth_quake_shelter_map.html'">避難所を探す(地震時)</button>
+<button class="tsunami_button" onclick="location.href='tsunami_shelter_map.html'">避難所を探す(津波時)</button>
+<button class="Wi-Fi_button" onclick="location.href='wifi_map.html'">Wi-Fi設置施設を探す</button>
+<button class="test_button" onclick="location.href='test.html'">防災チェックテスト</button>
+<img src="saigai_hinan.png">
+<p class="url"><a href="https://maps.gsi.go.jp/">地理院地図</a>と<a href="https://www.city.shibata.lg.jp/machidukuri/opendata/1024525.html">「避難所」「避難場所」<br>「Shibata City Free Wi-Fi」<br>（新発田市）</a>を加工して作成</p>
+</body>
+</html>

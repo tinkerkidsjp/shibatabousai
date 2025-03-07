@@ -28,7 +28,7 @@
 
     function Init() {
         var vURL      = "https://maps.gsi.go.jp";
-        var vURL_Site = "/index_pm.html?postmessage=1#16/" + lat_now + "/" + lng_now + "/&base=pale&ls=pale%7Crelief_free%2C0.25&blend=1&disp=11&vs=c1g1j0h0k0l0u0t0z0r0s0m0f1&reliefdata=03GFF0000G7GFFF700GG37FF00";
+        var vURL_Site = "/index_pm.html?postmessage=1#16/" + lat_now + "/" + lng_now + "/&base=pale&ls=pale%7Crelief_free%2C0.3&blend=1&disp=11&vs=c1g1j0h0k0l0u0t0z0r0s0m0f1&reliefdata=03GFF0000G7GFFF700GG37FF00";
         oMap = document.createElement("iframe");
         oMap.style.display = "none";
         EvtResize();
@@ -134,31 +134,40 @@ p {
     position: absolute;
 }
 .one {
-    background-color: rgba(255, 0, 0, 0.75);
+    background-color: rgba(255, 0, 0, 0.3);
     width: 15px;
     height: 12px;
     margin: 4% 5%;
     display: block;
     text-align: center;
     position: absolute;
+    border: 1px;
+    border-color: rgb(130, 130, 130);
+    border-style: solid;
 }
 .two {
-    background-color: rgba(255, 247, 0, 0.75);
+    background-color: rgba(255, 247, 0, 0.3);
     width: 15px;
     height: 12px;
     margin: 4% 5%;
     display: block;
     text-align: center;
     position: absolute;
+    border: 1px;
+    border-color: rgb(130, 130, 130);
+    border-style: solid;
 }
 .three {
-    background-color: rgba(55, 255, 0, 0.75);
+    background-color: rgba(55, 255, 0, 0.3);
     width: 15px;
     height: 12px;
     margin: 4% 5%;
     display: block;
     text-align: center;
     position: absolute;
+    border: 1px;
+    border-color: rgb(130, 130, 130);
+    border-style: solid;
 }
 #topDiv {
     visibility: visible;
@@ -191,7 +200,7 @@ p {
 </head>
 <body>
     <div id="openDiv">
-        <p>標高<div class="one"></div>　　3m以下<br><div class="two"></div>　　3m~7m以下<br><div class="three"></div>　　7m~</p>
+        <p>標高<div class="one"></div>　　3m以下<br><div class="two"></div>　　3m～7m以下<br><div class="three"></div>　　7m～</p>
     </div>
     <div id="topDiv" style="text-align: left;">
         <p><div class="green"></div>　　現在地<br><div class="red"></div>　　避難所<br><div class="pink"></div>　　避難場所</p>

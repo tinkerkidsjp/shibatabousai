@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>新発田市防災アプリ</title>
+<script>
+    function explanation() {
+        alert('「避難所を探す」、「Wi-Fi設置施設を探す」を使用する場合は、お使いの端末の位置情報をオンにしてからご利用ください。\n現在地付近の地図が表示されますが、多少時間がかかります。');
+    }
+</script>
 <style>
 body {
     font-family: sans-serif;
@@ -48,10 +53,14 @@ img {
 .test_button {
     background-color: rgb(103, 0, 181);
 }
+.explanation_button {
+    background-color: rgb(235, 133, 0);
+}
 </style>
 </head>
 <body style="text-align: center; font-family: sans-serif;">
 <h1>新発田市防災アプリ</h1>
+<button class="explanation_button" onclick="explanation()">ご利用ガイド</button>
 <button class="heavy_rain_button" onclick="location.href='heavy_rain_shelter_map.html'">避難所を探す(豪雨時)</button>
 <button class="earth_quake_button" onclick="location.href='earth_quake_shelter_map.html'">避難所を探す(地震時)</button>
 <button class="tsunami_button" onclick="location.href='tsunami_shelter_map.html'">避難所を探す(津波時)</button>

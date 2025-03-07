@@ -45,7 +45,25 @@
         }
         pen.stroke();
 
-        frame = frame + 2;
+        frame += 2;
+    }
+
+    function make_table(necessary_goods) {
+        var table = document.getElementById('table');
+        for (var i = table.rows.length - 1; i >= 0; i--) {
+            table.deleteRow(i);
+        }
+        let newRow = table.insertRow();
+        let newCell = newRow.insertCell();
+        for (var i = 0; i < necessary_goods.length; i++) {
+            var p = document.createElement("p");
+            var text = document.createTextNode(necessary_goods[i]);
+            if (necessary_goods[i] == '・カンパン、缶詰など火を<br>通さずに食べられるもの') {
+                text = document.createTextNode('・カンパン、缶詰など火を\n　通さずに食べられるもの');
+            }
+            p.appendChild(text);
+            newCell.appendChild(p);
+        }
     }
 
     var memoly = [];
@@ -56,14 +74,6 @@
             memoly.push(0);
         } else if (answer == 3) {
             memoly.push(2);
-        } else if (answer == 4) {
-            memoly.pop();
-        }
-
-        if (memoly.length > 0) {
-            document.getElementById('undo').style.display = 'block';
-        } else {
-            document.getElementById('undo').style.display = 'none';
         }
 
         if (Disaster_prevention_goods[memoly.length] == '生理用品' || Disaster_prevention_goods[memoly.length] == '粉ミルク' || Disaster_prevention_goods[memoly.length] == '離乳食' || Disaster_prevention_goods[memoly.length] == '紙おむつ') {
@@ -76,7 +86,7 @@
             document.getElementById('checksheet').style.display = 'none';
             document.getElementById('answer_check').style.display = 'block';
             var count = [[], []];
-            var necessary_goods = '';
+            var necessary_goods = [];
             var grade = ['grade1.png', 'grade2.png', 'grade3.png', 'grade4.png', 'grade5.png'];
             for (var i = 0; i < Disaster_prevention_goods.length; i++) {
                 if (memoly[i] == 1) {
@@ -84,33 +94,36 @@
                 } else if (memoly[i] == 2) {
                     count[1].push(i);
                 } else if (memoly[i] == 0) {
-                    necessary_goods = necessary_goods + '<br>' + Disaster_prevention_goods[i];
+                    necessary_goods.push('・' + Disaster_prevention_goods[i]);
                 }
             }
             clearInterval(setinterval);
             frame = 0;
+            document.getElementById('comment_plus').style.display = 'none';
+            var table = document.getElementById('table');
+            table.style.display = 'block';
             var answer_total = Number(Disaster_prevention_goods.length) - count[1].length;
-            document.getElementById('total_answer').innerHTML = 'あなたは' + answer_total + '品目中' + count[0].length + '品目の<br>防災グッズを取り出し可能でした';
+            document.getElementById('total_answer').innerHTML = 'あなたは' + answer_total + '品目中' + count[0].length + '品目の<br>防災グッズを持ち出し可能でした';
             if (answer_total - count[0].length == 0) {
-                document.getElementById('comment').innerHTML = 'あなたの防災対策は<br>十分に整っています<br>水や食料品の賞味期限にも<br>気を付けておきましょう';
+                table.style.display = 'none';
+                document.getElementById('comment').innerHTML = 'あなたの防災対策は<br>十分に整っています。<br>水や食料品の賞味期限にも<br>気を付けておきましょう。';
                 setinterval = setInterval(canvas_animation, 1, answer_total, count[0].length, grade[0]);
             } else if (answer_total - count[0].length <= 3) {
-                if (answer_total - count[0].length == 1) {
-                    document.getElementById('comment').innerHTML = 'あなたの防災対策は<br>とても整っていますが' + necessary_goods + '<br>も用意しておけば完璧です<br>水や食料品の賞味期限にも<br>気を付けておきましょう';
-                } else {
-                    document.getElementById('comment').innerHTML = 'あなたの防災対策は<br>とても整っていますが' + necessary_goods + '<br>などの防災グッズも<br>用意しておけば完璧です<br>水や食料品の賞味期限にも<br>気を付けておきましょう';
-                }
+                document.getElementById('comment_plus').style.display = 'block';
+                document.getElementById('comment').innerHTML = 'あなたの防災対策は<br>とても整っていますが、<br>以下の防災グッズも<br>用意しておけばさらに良いでしょう。';
+                document.getElementById('comment_plus').innerHTML = '水や食料品の賞味期限にも、<br>気を付けておきましょう。';
                 setinterval = setInterval(canvas_animation, 1, answer_total, count[0].length, grade[1]);
             } else if (answer_total - count[0].length <= 8) {
-                document.getElementById('comment').innerHTML = 'あなたの防災対策は<br>概ね整っていますが' + necessary_goods + '<br>などの防災グッズも<br>用意しておく必要があります';
+                document.getElementById('comment').innerHTML = 'あなたの防災対策は<br>ある程度整っていますが、<br>以下の防災グッズも<br>用意しておく必要があります。';
                 setinterval = setInterval(canvas_animation, 1, answer_total, count[0].length, grade[2]);
             } else if (answer_total - count[0].length <= Math.floor((answer_total) / 2)) {
-                document.getElementById('comment').innerHTML = 'あなたは防災対策を<br>もう少し頑張りましょう' + necessary_goods + '<br>などの防災グッズを<br>用意しておく必要があります';
+                document.getElementById('comment').innerHTML = 'あなたは防災対策を<br>もう少し頑張りましょう。<br>以下の防災グッズなども<br>用意しておく必要があります。';
                 setinterval = setInterval(canvas_animation, 1, answer_total, count[0].length, grade[3]);
             } else {
-                document.getElementById('comment').innerHTML = 'あなたは防災対策を<br>今からでも頑張りましょう' + necessary_goods + '<br>などの防災グッズを<br>用意する必要があります';
+                document.getElementById('comment').innerHTML = 'あなたの防災対策は不十分です。<br>少しずつでも以下の物を用意しましょう。';
                 setinterval = setInterval(canvas_animation, 1, answer_total, count[0].length, grade[4]);
             }
+            make_table(necessary_goods);
         }
         document.getElementById('goods').innerHTML = Disaster_prevention_goods[memoly.length];
         var image_div = document.getElementById('image');
@@ -127,7 +140,6 @@
     function start() {
         memoly = [];
         document.getElementById('answer_check').style.display = 'none';
-        document.getElementById('undo').style.display = 'none';
         document.getElementById('checksheet').style.display = 'block';
         document.getElementById('image').style.display = 'block';
         document.getElementById('goods').textContent = Disaster_prevention_goods[0];
@@ -161,6 +173,16 @@
         text-align: center;
         margin-top: 30px;
     }
+    p {
+        line-height: 1.5;
+        /* pタグの中の内容がそっくりそのままhtmlに反映される */
+        white-space: pre;
+    }
+    table {
+        margin: auto;
+        width: 230px;
+        text-align: left;
+    }
     #checksheet {
         display: none;
     }
@@ -170,18 +192,21 @@
     .home_button {
         margin: 15px auto;
         background-color:rgb(103, 0, 181);
+        font-size: 25px;
     }
     .yes_button {
         background-color: rgb(25, 193, 2);
+        margin-bottom: 20px;
+        font-size: 25px;
     }
     .no_button {
         background-color: rgb(245, 127, 30);
+        font-size: 25px;
     }
     #unnecessary {
         background-color: rgb(34, 139, 137);
-    }
-    #undo {
-        background-color: rgb(38, 117, 72);
+        margin-top: 20px;
+        font-size: 25px;
     }
 </style>
 </head>
@@ -189,18 +214,19 @@
     <h1>防災チェックテスト</h1>
     <div id="checksheet">
         <div id="image"><img></div>
-        <p><a id="goods"></a>は、<br>すぐに取り出せますか</p>
+        <p><a id="goods"></a>は<br>すぐに持ち出せますか</p>
         <button class="yes_button" onclick="checksheet_question(1)">はい</button>
         <button class="no_button" onclick="checksheet_question(2)">いいえ</button>
         <button id="unnecessary" onclick="checksheet_question(3)">必要がない</button>
-        <button id="undo" onclick="checksheet_question(4)">一つ戻る</button>
     </div>
     <div id="answer_check">
         <p><a id="total_answer"></a></p>
         <canvas id="canvas" width="250px" height="160px"></canvas>
         <p><a id="comment"></a></p>
+        <table id="table"></table>
+        <p><a id="comment_plus"></a></p>
         <p class="url">このチェックテストは、<br><a href="https://www.city.shibata.lg.jp/kurashi/iza/sonae/1008873/index.html">新発田市ハザードマップの<br>非常持ち出し品チェックシート</a><br>を基に作成しました。</p>
+        <button class="home_button" onclick="location.href='index.html'">ホームに戻る</button>
     </div>
-    <button class="home_button" onclick="location.href='index.html'">ホームに戻る</button>
 </body>
 </html>
